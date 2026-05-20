@@ -6,6 +6,10 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 0.0.2-beta — 2026-05-20
+
+Mise à jour des liens de documentation.
+
 ## 0.0.1-beta — 2026-04-13
 
 Première version beta publique.
