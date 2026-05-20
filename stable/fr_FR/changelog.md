@@ -1,10 +1,11 @@
----
-title: MyOkoTouch — Changelog (stable)
----
+# Changelog — MyOkoTouch
 
-# Changelog stable
+> **IMPORTANT**
+>
+> S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
-Le changelog sera synchronisé automatiquement lors de la prochaine
-publication du canal **stable**.
+> Historique des versions du plugin MyOkoTouch.
 
-[← Retour à la doc stable](../)
+## Non publié
+
+_Aucune release stable publiée pour l'instant._
