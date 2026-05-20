@@ -1,0 +1,7 @@
+title: MyOkoTouch — Plugin Jeedom
+description: Plugin Jeedom pour les chaudières Okofen sous firmware Pelletronic Touch.
+baseurl: "/jeedom-plugin-myokotouch"
+theme: jekyll-theme-cayman
+permalink: /:path/
+exclude:
+  - README.md
