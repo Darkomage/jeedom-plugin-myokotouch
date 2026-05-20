@@ -1,10 +1,15 @@
----
-title: MyOkoTouch — Changelog (beta)
----
+# Changelog — MyOkoTouch
 
-# Changelog beta
+> **IMPORTANT**
+>
+> S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
-Le changelog sera synchronisé automatiquement lors de la prochaine
-publication du canal **beta**.
+> Historique des versions du plugin MyOkoTouch.
 
-[← Retour à la doc beta](../)
+## 0.0.1-beta — 2026-04-13
+
+Première version beta publique.
+
+## Non publié
+
+_Aucune release stable publiée pour l'instant._
