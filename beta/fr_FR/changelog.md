@@ -14,6 +14,6 @@ Mise à jour des liens de documentation.
 
 Première version beta publique.
 
-## Non publié
+## 1.0.0 — 2026-05-22
 
-_Aucune release stable publiée pour l'instant._
+Première release stable.
