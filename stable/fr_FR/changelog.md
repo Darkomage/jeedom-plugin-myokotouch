@@ -6,6 +6,6 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
-## Non publié
+## 1.0.0 — 2026-05-22
 
-_Aucune release stable publiée pour l'instant._
+Première release stable.
