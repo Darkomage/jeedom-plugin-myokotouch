@@ -6,6 +6,11 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 1.1.2 — 2026-06-30
+
+### Corrections
+- **Synchronisation** : corrige un échec de synchronisation (« Duplicate entry… ») sur les équipements `weather` en mode expert — la variable Okofen `refresh` n'entre plus en conflit avec la commande « Rafraîchir » de Jeedom. Une commande parasite éventuellement créée par la 1.1.1 est nettoyée automatiquement.
+
 ## 1.1.1 — 2026-06-30
 
 ### Nouveautés
