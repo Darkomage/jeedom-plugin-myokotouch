@@ -1,0 +1,40 @@
+/* Icône de type sur les cartes équipement MyOkoTouch */
+.oko-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    border-radius: 8px;
+    margin: 6px auto 4px;
+}
+
+.oko-card-icon i {
+    font-size: 32px;
+    color: #ffffff;
+}
+
+/* Séparation visuelle entre zones */
+.eqLogicThumbnailDisplay > legend + legend,
+.eqLogicThumbnailContainer + legend {
+    margin-top: 18px;
+}
+
+/* Zones enroulables */
+legend.oko-zone-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+legend.oko-zone-toggle .oko-zone-chevron {
+    float: right;
+    transition: transform 0.2s ease;
+}
+
+legend.oko-zone-toggle .oko-zone-chevron.oko-collapsed {
+    transform: rotate(-90deg);
+}
+
+.oko-zone-content.oko-hidden {
+    display: none;
+}
