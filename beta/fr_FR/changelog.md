@@ -6,6 +6,11 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 1.1.1-beta — 2026-06-30
+
+### Corrections
+- **Unités `?C`** : substitution `?C → °C` pour les firmwares Okofen mutilant le caractère « ° » (remplacé par « ? » à la source). Après mise à jour, une synchronisation rétablit l'affichage `°C`.
+
 ## 1.1.0-beta — 2026-06-30
 
 ### Nouveautés
