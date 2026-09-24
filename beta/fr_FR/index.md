@@ -49,6 +49,10 @@ Accessible via **Plugins > Gestion des plugins > MyOkoTouch > Configuration** (i
 
 Vérifie l'accès à la chaudière avec les paramètres saisis et affiche la liste des composants détectés. **Les paramètres sont automatiquement sauvegardés avant le test.**
 
+### Bouton « Générer un fichier de diagnostic »
+
+Génère et télécharge un fichier `.json` contenant le **retour brut** de la chaudière (avec les informations d'encodage) et l'inventaire des commandes Jeedom existantes. Ce fichier est destiné à être **transmis au support** en cas de problème d'affichage, d'encodage ou de valeurs incohérentes — il permet d'analyser ce que renvoie réellement la chaudière sans y accéder directement. **Le mot de passe n'y figure pas et l'adresse est masquée.**
+
 ---
 
 ## Synchronisation des équipements
@@ -110,4 +114,19 @@ Le mode définit quelles commandes sont créées sur un équipement.
 Le démon Python tourne en arrière-plan et gère la communication avec la chaudière.
 
 - **Démarrage** : automatique au chargement du plugin, ou manuel depuis la page de configuration
+
+---
+
+## Problèmes connus
+
+### Caractères mutilés sur les anciens firmwares
+
+Certains firmwares Okofen anciens (**V3.00 confirmé**, potentiellement d'autres) renvoient des **caractères mutilés** dans leurs réponses JSON : le caractère d'origine est remplacé par un `?` **à la source** (dans la chaudière elle-même). Cela peut toucher :
+
+- les **unités** — par exemple `°C` qui s'affiche `?C` ;
+- les **caractères accentués** (libellés d'état, noms de circuits…).
+
+Le plugin corrige automatiquement les unités connues (`?C` → `°C`) lors de la **synchronisation**. En revanche, les caractères accentués mutilés ne sont **pas récupérables** : l'information est perdue au niveau de la chaudière. Mettre à jour le firmware de la chaudière (lorsque c'est possible) résout le problème à la racine.
+
+> Si vous rencontrez un cas non couvert, générez un **fichier de diagnostic** (voir *Configuration globale*) et transmettez-le au support : il contient les octets bruts renvoyés par votre chaudière.
 
