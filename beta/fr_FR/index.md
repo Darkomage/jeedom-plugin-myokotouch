@@ -91,6 +91,24 @@ Chaque équipement correspond à un composant Okofen.
 
 Les valeurs brutes de l'API sont automatiquement converties via le facteur Okofen (ex. : `493 × 0.1 = 49.3 °C`).
 
+### Types génériques
+
+Les principales commandes reçoivent un **type générique** Jeedom, utilisé par l'application mobile et les passerelles (Homebridge, Google Home, Alexa…) :
+
+| Équipement | Commandes typées |
+|---|---|
+| Circuit de chauffage | présenté comme un **thermostat** : température ambiante, consigne (lecture et réglage), mode (lecture et réglage), état texte |
+| ECS | température, mode (lecture et réglage), état de la pompe *(mode expert)* |
+| Chaudière | température, consommation de pellets du jour, mode (lecture et réglage), contact brûleur *(mode expert)* |
+| Système | température extérieure, mode (lecture et réglage) |
+| Circulateur | température retour, mode (lecture et réglage) |
+| Accumulateur, solaire | température |
+| Météo | température actuelle |
+
+Le type d'une commande se consulte et se modifie dans sa configuration avancée (roue crantée → onglet Configuration → « Type générique »). Un type modifié manuellement n'est jamais écrasé par la synchronisation ; il est en revanche réappliqué par « Régénérer les commandes ». Sur un équipement existant, lancer une synchronisation pour attribuer les types aux commandes qui n'en ont pas.
+
+> Le mode du thermostat se règle par une liste (Arrêt / Auto / Confort / Réduit) : selon l'application utilisée, ce réglage peut ne pas être proposé.
+
 ---
 
 ## Mode Standard / Expert

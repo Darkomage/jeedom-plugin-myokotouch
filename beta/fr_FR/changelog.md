@@ -6,6 +6,18 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 1.2.0-beta — 2026-09-25
+
+Version beta alignée sur la stable 1.2.0 (contenu des 1.1.3-beta et 1.1.4-beta ci-dessous).
+
+## 1.1.4-beta — 2026-09-24
+
+### Nouveautés
+- **Types génériques** : les principales commandes reçoivent un type générique Jeedom (circuit de chauffage présenté comme thermostat, températures, état de chauffe, modes, consommation de pellets, météo) pour l'application mobile et les passerelles (Homebridge, Google Home, Alexa…). Un type modifié manuellement n'est pas écrasé ; lancer une synchronisation pour l'appliquer aux équipements existants.
+
+### Corrections
+- **Sécurité des logs** : la clé API Jeedom et le mot de passe Okofen n'apparaissent plus en clair dans les logs (ligne de lancement du démon, URL de callback journalisée en mode Debug, messages socket).
+
 ## 1.1.3-beta — 2026-09-23
 
 ### Corrections
@@ -20,6 +32,17 @@ Mise à jour des liens de documentation.
 ## 0.0.1-beta — 2026-04-13
 
 Première version beta publique.
+
+## 1.2.0 — 2026-09-25
+
+### Nouveautés
+- **Types génériques** : les principales commandes reçoivent un type générique Jeedom (circuit de chauffage présenté comme thermostat, températures, état de chauffe, modes, consommation de pellets, météo) pour l'application mobile et les passerelles (Homebridge, Google Home, Alexa…). Un type modifié manuellement n'est pas écrasé ; lancer une synchronisation pour l'appliquer aux équipements existants.
+
+### Corrections
+- **Compatibilité Debian 12 / PHP 8** : l'arrêt du démon (bouton Arrêter, réinstallation des dépendances) ne plante plus sur l'erreur « Undefined constant SIGTERM ».
+- **Arrêt du démon** : n'arrête plus par erreur les démons d'autres plugins construits sur le même modèle.
+- **Sécurité des logs** : la clé API Jeedom et le mot de passe Okofen n'apparaissent plus en clair dans les logs.
+- **Logs du démon** : les erreurs de communication avec la chaudière indiquent désormais leur nature (auparavant `[poll] erreur:` pouvait apparaître sans détail).
 
 ## 1.1.2 — 2026-06-30
 
