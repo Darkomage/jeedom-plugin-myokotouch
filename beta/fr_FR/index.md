@@ -91,6 +91,14 @@ Chaque équipement correspond à un composant Okofen.
 
 Les valeurs brutes de l'API sont automatiquement converties via le facteur Okofen (ex. : `493 × 0.1 = 49.3 °C`).
 
+### Valeurs à choix (programme, mode…)
+
+Les variables à liste de choix (ex. **Choix programme** : `0` = Prog. 1, `1` = Prog. 2 ; **Mode** : `0` = Arrêt, `1` = Auto…) sont des commandes info **numériques** : la valeur reste le code Okofen (utilisable tel quel dans les scénarios et l'historique), mais le widget affiche le **libellé** correspondant.
+
+- La correspondance code → libellé se trouve dans la configuration avancée de la commande (roue crantée → onglet **Affichage** → *Paramètres optionnels widget*, paramètre `valueMap`, format `0|Prog. 1;1|Prog. 2`). Elle peut être modifiée librement (ex. `0|Hiver;1|Été`) : la synchronisation ne l'écrase pas, « Régénérer les commandes » la réinitialise.
+- La commande action associée (liste déroulante) est liée à son info : elle affiche le choix en cours.
+- Les états marche/arrêt (pompe, brûleur…) restent des infos binaires.
+
 ### Types génériques
 
 Les principales commandes reçoivent un **type générique** Jeedom, utilisé par l'application mobile et les passerelles (Homebridge, Google Home, Alexa…) :
