@@ -1,0 +1,317 @@
+<?php
+if (!isConnect('admin')) {
+	throw new Exception('{{401 - Accès non autorisé}}');
+}
+// Déclaration des variables obligatoires
+$plugin = plugin::byId('myokotouch');
+sendVarToJS('eqType', $plugin->getId());
+$eqLogics = eqLogic::byType($plugin->getId());
+?>
+
+<div class="row row-overflow">
+	<!-- Page d'accueil du plugin -->
+	<div class="col-xs-12 eqLogicThumbnailDisplay">
+		<div class="row">
+			<div class="col-sm-10">
+				<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
+				<!-- Boutons de gestion du plugin -->
+				<div class="eqLogicThumbnailContainer">
+					<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
+						<i class="fas fa-wrench"></i>
+						<br>
+						<span>{{Configuration}}</span>
+					</div>
+                    <div class="cursor logoPrimary" id="bt_syncEquipments">
+                        <i class="fas fa-sync"></i>
+                        <br>
+                        <span>{{Synchroniser}}</span>
+                    </div>
+				</div>
+			</div>
+			<?php
+			// à conserver
+			// sera afficher uniquement si l'utilisateur est en version 4.4 ou supérieur
+			$jeedomVersion  = jeedom::version() ?? '0';
+			$displayInfoValue = version_compare($jeedomVersion, '4.4.0', '>=');
+			if ($displayInfoValue) {
+			?>
+				<div class="col-sm-2">
+					<legend><i class=" fas fa-comments"></i> {{Community}}</legend>
+					<div class="eqLogicThumbnailContainer">
+						<div class="cursor eqLogicAction logoSecondary" data-action="createCommunityPost">
+							<i class="fas fa-ambulance"></i>
+							<br>
+							<span style="color:var(--txt-color)">{{Créer un post Community}}</span>
+						</div>
+					</div>
+				</div>
+			<?php
+			}
+			?>
+		</div>
+		<?php
+		if (count($eqLogics) == 0) {
+			echo '<legend><i class="fas fa-table"></i> {{Mes équipements}}</legend>';
+			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement trouvé. Configurez l\'adresse Okofen puis cliquez sur "Synchroniser".}}</div>';
+		} else {
+			// Champ de recherche
+			echo '<div class="input-group" style="margin:5px;">';
+			echo '<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">';
+			echo '<div class="input-group-btn">';
+			echo '<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>';
+			echo '<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>';
+			echo '</div>';
+			echo '</div>';
+
+			// Mapping icône + couleur par oko_type
+			$typeIconMap = [
+				'system'     => ['icon' => 'fa-cog',                 'color' => '#6c757d'],
+				'weather'    => ['icon' => 'fa-cloud-sun',            'color' => '#5bc0de'],
+				'forecast'   => ['icon' => 'fa-calendar-alt',         'color' => '#5bc0de'],
+				'error'      => ['icon' => 'fa-exclamation-triangle', 'color' => '#d9534f'],
+				'stirling'   => ['icon' => 'fa-bolt',                 'color' => '#6c757d'],
+				'power'      => ['icon' => 'fa-plug',                 'color' => '#6c757d'],
+				'pe'         => ['icon' => 'fa-fire',                 'color' => '#e8590c'],
+				'hk'         => ['icon' => 'fa-thermometer-half',     'color' => '#f0803c'],
+				'ww'         => ['icon' => 'fa-tint',                 'color' => '#17a2b8'],
+				'circ'       => ['icon' => 'fa-sync-alt',             'color' => '#5bc0de'],
+				'pu'         => ['icon' => 'fa-database',             'color' => '#6c757d'],
+				'sk'         => ['icon' => 'fa-solar-panel',          'color' => '#f0c030'],
+				'se'         => ['icon' => 'fa-sun',                  'color' => '#f0c030'],
+				'wireless'   => ['icon' => 'fa-broadcast-tower',      'color' => '#7952b3'],
+				'thirdparty' => ['icon' => 'fa-puzzle-piece',         'color' => '#7952b3'],
+			];
+			$defaultIcon = ['icon' => 'fa-plug', 'color' => '#6c757d'];
+
+			// Définition des zones (pe en premier dans supervision)
+			$zones = [
+				['key' => 'supervision', 'label' => '{{Système & Supervision}}', 'icon' => 'fa-cog',             'types' => ['pe', 'system', 'weather', 'forecast', 'error', 'stirling', 'power'], 'optional' => false],
+				['key' => 'chauffage',   'label' => '{{Chauffage}}',             'icon' => 'fa-thermometer-half','types' => ['hk'],                                                                 'optional' => false],
+				['key' => 'ecs',         'label' => '{{ECS & Circulateurs}}',    'icon' => 'fa-tint',            'types' => ['ww', 'circ'],                                                         'optional' => false],
+				['key' => 'accum',       'label' => '{{Accumulation}}',          'icon' => 'fa-database',        'types' => ['pu'],                                                                 'optional' => true],
+				['key' => 'solaire',     'label' => '{{Solaire}}',               'icon' => 'fa-solar-panel',     'types' => ['sk', 'se'],                                                           'optional' => true],
+				['key' => 'divers',      'label' => '{{Divers}}',                'icon' => 'fa-broadcast-tower', 'types' => ['wireless', 'thirdparty'],                                             'optional' => true],
+			];
+
+			// Pré-indexer les eqLogics par oko_type
+			$byType = [];
+			$uncategorized = [];
+			foreach ($eqLogics as $eqLogic) {
+				$t = $eqLogic->getConfiguration('oko_type', '');
+				if ($t !== '') {
+					$byType[$t][] = $eqLogic;
+				} else {
+					$uncategorized[] = $eqLogic;
+				}
+			}
+
+			// Rendu des zones
+			foreach ($zones as $zone) {
+				$zoneEqs = [];
+				foreach ($zone['types'] as $t) {
+					if (!empty($byType[$t])) {
+						$zoneEqs = array_merge($zoneEqs, $byType[$t]);
+					}
+				}
+				if ($zone['optional'] && count($zoneEqs) === 0) {
+					continue;
+				}
+				echo '<legend class="oko-zone-toggle" data-zone="' . $zone['key'] . '">';
+				echo '<i class="fas ' . $zone['icon'] . '"></i> ' . $zone['label'];
+				echo ' <i class="fas fa-chevron-down oko-zone-chevron"></i>';
+				echo '</legend>';
+				echo '<div class="oko-zone-content" data-zone="' . $zone['key'] . '">';
+				echo '<div class="eqLogicThumbnailContainer">';
+				if (count($zoneEqs) === 0) {
+					echo '<br><div class="text-center" style="font-size:1em;color:var(--txt-color-low);">{{Aucun équipement dans cette zone.}}</div>';
+				} else {
+					foreach ($zoneEqs as $eqLogic) {
+						$okoType  = $eqLogic->getConfiguration('oko_type', '');
+						$iconData = isset($typeIconMap[$okoType]) ? $typeIconMap[$okoType] : $defaultIcon;
+						$opacity  = $eqLogic->getIsEnable() ? '' : 'disableCard';
+						echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqLogic->getId() . '">';
+						echo '<div class="oko-card-icon" style="background-color:' . $iconData['color'] . ';">';
+						echo '<i class="fas ' . $iconData['icon'] . '"></i>';
+						echo '</div>';
+						echo '<br>';
+						echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+						echo '<span class="hiddenAsCard displayTableRight hidden">';
+						echo ($eqLogic->getIsVisible() == 1)
+							? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>'
+							: '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
+						echo '</span>';
+						echo '</div>';
+					}
+				}
+				echo '</div>'; // .eqLogicThumbnailContainer
+				echo '</div>'; // .oko-zone-content
+			}
+
+			// Zone de secours pour équipements sans oko_type
+			if (!empty($uncategorized)) {
+				echo '<legend><i class="fas fa-question-circle"></i> {{Non classés}}</legend>';
+				echo '<div class="eqLogicThumbnailContainer">';
+				foreach ($uncategorized as $eqLogic) {
+					$opacity = $eqLogic->getIsEnable() ? '' : 'disableCard';
+					echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqLogic->getId() . '">';
+					echo '<img src="' . $eqLogic->getImage() . '"/>';
+					echo '<br>';
+					echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+					echo '</div>';
+				}
+				echo '</div>';
+			}
+		}
+		?>
+	</div> <!-- /.eqLogicThumbnailDisplay -->
+
+	<!-- Page de présentation de l'équipement -->
+	<div class="col-xs-12 eqLogic" style="display: none;">
+		<!-- barre de gestion de l'équipement -->
+		<div class="input-group pull-right" style="display:inline-flex;">
+			<span class="input-group-btn">
+				<!-- Les balises <a></a> sont volontairement fermées à la ligne suivante pour éviter les espaces entre les boutons. Ne pas modifier -->
+				<a class="btn btn-sm btn-default eqLogicAction roundedLeft" data-action="configure"><i class="fas fa-cogs"></i><span class="hidden-xs"> {{Configuration avancée}}</span>
+				</a><a class="btn btn-sm btn-default eqLogicAction" data-action="copy"><i class="fas fa-copy"></i><span class="hidden-xs"> {{Dupliquer}}</span>
+				</a><a class="btn btn-sm btn-success eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}
+				</a><a class="btn btn-sm btn-danger eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}
+				</a>
+			</span>
+		</div>
+		<!-- Onglets -->
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
+			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#commandtab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-list"></i> {{Commandes}}</a></li>
+		</ul>
+		<div class="tab-content">
+			<!-- Onglet de configuration de l'équipement -->
+			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
+				<!-- Partie gauche de l'onglet "Equipements" -->
+				<!-- Paramètres généraux et spécifiques de l'équipement -->
+				<form class="form-horizontal">
+					<fieldset>
+						<div class="col-lg-6">
+							<legend><i class="fas fa-wrench"></i> {{Paramètres généraux}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Nom de l'équipement}}</label>
+								<div class="col-sm-6">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display:none;">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement}}">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Objet parent}}</label>
+								<div class="col-sm-6">
+									<select id="sel_object" class="eqLogicAttr form-control" data-l1key="object_id">
+										<option value="">{{Aucun}}</option>
+										<?php
+										$options = '';
+										foreach ((jeeObject::buildTree(null, false)) as $object) {
+											$options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
+										}
+										echo $options;
+										?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Catégorie}}</label>
+								<div class="col-sm-6">
+									<?php
+									foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
+										echo '<label class="checkbox-inline">';
+										echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" >' . $value['name'];
+										echo '</label>';
+									}
+									?>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Options}}</label>
+								<div class="col-sm-6">
+									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked>{{Activer}}</label>
+									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked>{{Visible}}</label>
+								</div>
+							</div>
+
+							<legend><i class="fas fa-cogs"></i> {{Informations Okofen}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Composant}}</label>
+								<div class="col-sm-6">
+									<span class="eqLogicAttr form-control-static" data-l1key="configuration" data-l2key="oko_component" style="font-family:monospace;"></span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Type}}</label>
+								<div class="col-sm-6">
+									<span class="eqLogicAttr form-control-static" data-l1key="configuration" data-l2key="oko_type" style="font-family:monospace;"></span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Mode commandes}}</label>
+								<div class="col-sm-6">
+									<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="cmd_mode">
+										<option value="standard">{{Standard}}</option>
+										<option value="expert">{{Expert}}</option>
+									</select>
+									<span id="cmd_mode_expert_warning" class="help-block text-warning" style="display:none;">
+										{{En mode expert, toutes les variables Okofen seront créées comme commandes. Sauvegardez pour déclencher la régénération automatique.}}
+									</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-4 col-sm-6">
+									<a class="btn btn-warning btn-sm" id="bt_regenerateCommands">
+										<i class="fas fa-redo"></i> {{Régénérer les commandes}}
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<!-- Partie droite de l'onglet "Équipement" -->
+						<!-- Affiche un champ de commentaire par défaut mais vous pouvez y mettre ce que vous voulez -->
+						<div class="col-lg-6">
+							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Description}}</label>
+								<div class="col-sm-6">
+									<textarea class="form-control eqLogicAttr autogrow" data-l1key="comment"></textarea>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div><!-- /.tabpanel #eqlogictab-->
+
+			<!-- Onglet des commandes de l'équipement -->
+			<div role="tabpanel" class="tab-pane" id="commandtab">
+				<a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter une commande}}</a>
+				<br><br>
+				<div class="table-responsive">
+					<table id="table_cmd" class="table table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="hidden-xs" style="min-width:50px;width:70px;">ID</th>
+								<th style="min-width:200px;width:350px;">{{Nom}}</th>
+								<th>{{Type}}</th>
+								<th style="min-width:260px;">{{Options}}</th>
+								<th>{{Etat}}</th>
+								<th style="min-width:80px;width:200px;">{{Actions}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div><!-- /.tabpanel #commandtab-->
+
+		</div><!-- /.tab-content -->
+	</div><!-- /.eqLogic -->
+</div><!-- /.row row-overflow -->
+
+<!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
+<?php include_file('desktop', 'myokotouch', 'js', 'myokotouch'); ?>
+<?php include_file('desktop', 'myokotouch', 'css', 'myokotouch'); ?>
+<!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
+<?php include_file('core', 'plugin.template', 'js'); ?>

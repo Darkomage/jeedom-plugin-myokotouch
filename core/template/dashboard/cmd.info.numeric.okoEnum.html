@@ -1,0 +1,40 @@
+<div class="cmd cmd-widget #history#" data-type="info" data-subtype="numeric" data-template="okoEnum" data-cmd_id="#id#" data-cmd_uid="#uid#" data-version="#version#" data-eqLogic_id="#eqLogic_id#" data-oko_map="#valueMap#">
+  <div class="content-xs">
+    <span class="cmdName #hide_name#">#name_display#</span> <strong class="value"></strong>
+  </div>
+  <div class="timeCmd label label-default #history#" data-type="info"></div>
+  <template>
+    <div>valueMap : 0|Libellé A;1|Libellé B ({{Correspondance valeur → libellé affiché}})</div>
+    <div>time : duration|date ({{Affiche durée ou date de la valeur}})</div>
+  </template>
+  <script>
+    jeedom.cmd.addUpdateFunction('#id#', function(_options) {
+      var cmd = document.querySelector('.cmd[data-cmd_uid="#uid#"]')
+      if (!is_object(cmd)) {
+        return
+      }
+      cmd.querySelector('.content-xs').setAttribute('title', '{{Date de valeur}}: ' + _options.valueDate + '<br>{{Date de collecte}}: ' + _options.collectDate)
+      if ('#time#' == 'duration' || '#time#' == 'date') {
+        jeedom.cmd.displayDuration(_options.valueDate, cmd.querySelector('.timeCmd'), '#time#')
+      }
+      // Correspondance "valeur|libellé;…" : clés comparées en numérique (0, "0" et 0.0 équivalents)
+      var norm = function(v) {
+        var n = parseFloat(v)
+        return isNaN(n) ? String(v).trim() : String(n)
+      }
+      var label = null
+      var pairs = (cmd.getAttribute('data-oko_map') || '').split(';')
+      for (var i = 0; i < pairs.length; i++) {
+        var sep = pairs[i].indexOf('|')
+        if (sep > 0 && norm(pairs[i].substring(0, sep)) === norm(_options.value)) {
+          label = pairs[i].substring(sep + 1)
+          break
+        }
+      }
+      cmd.querySelector('.value').textContent = (label !== null) ? label : _options.display_value
+      cmd.querySelector('.value').setAttribute('title', '{{Valeur}} : ' + _options.value)
+    })
+
+    jeedom.cmd.refreshValue([{ cmd_id: '#id#', value: '#value#', display_value: '#state#', valueDate: '#valueDate#', collectDate: '#collectDate#', alertLevel: '#alertLevel#', unit: '#unite#' }])
+  </script>
+</div>
