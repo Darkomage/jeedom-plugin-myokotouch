@@ -141,6 +141,12 @@ Le démon Python tourne en arrière-plan et gère la communication avec la chaud
 
 - **Démarrage** : automatique au chargement du plugin, ou manuel depuis la page de configuration
 
+### Le démon ne démarre pas : « Address already in use »
+
+Le démon écoute en local sur le **Port socket démon** (`55009` par défaut). Ce port est aussi le port par défaut du modèle de plugin Jeedom : un autre plugin peut donc déjà l'utiliser. Le plugin le détecte : dans le cadre **Démon** de la page de configuration du plugin, la ligne **Configuration** passe à **NOK** avec un message indiquant le port en conflit et, si possible, le processus qui l'occupe.
+
+Solution : dans la configuration du plugin, saisir un autre **Port socket démon** libre (par exemple `55077`), sauvegarder, puis relancer le démon.
+
 ---
 
 ## Problèmes connus

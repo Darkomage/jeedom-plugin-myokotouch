@@ -14,6 +14,9 @@
 
 Lancer une synchronisation des équipements pour appliquer ces changements aux commandes existantes.
 
+### Corrections
+- **Démon qui ne démarre pas (« Address already in use »)** : si le port socket du démon (`55009` par défaut) est déjà pris par un autre plugin, le cadre Démon de la page de configuration l'indique (configuration NOK, avec le processus en cause), au lieu d'un échec silencieux. Il suffit alors de choisir un autre « Port socket démon » dans la configuration du plugin.
+
 ## 1.2.0-beta — 2026-09-25
 
 Version beta alignée sur la stable 1.2.0 (contenu des 1.1.3-beta et 1.1.4-beta ci-dessous).
@@ -40,6 +43,17 @@ Mise à jour des liens de documentation.
 ## 0.0.1-beta — 2026-04-13
 
 Première version beta publique.
+
+## 1.2.1 — 2026-10-23
+
+### Améliorations
+- **Valeurs à choix (programme, mode…)** : les infos à liste de choix (ex. « Choix programme » des circulateurs, circuits et ECS) deviennent numériques et affichent leur libellé (« Prog. 1 », « Auto »…) au lieu du code brut `0`/`1`. La correspondance code → libellé est modifiable dans la configuration avancée de la commande (onglet Affichage, paramètre `valueMap`). Les états marche/arrêt (pompe, brûleur…) restent binaires.
+- **Listes déroulantes et curseurs** : chaque commande action est désormais liée à son info (valeur de retour d'état) et affiche la valeur en cours.
+
+Lancer une synchronisation des équipements pour appliquer ces changements aux commandes existantes.
+
+### Corrections
+- **Démon qui ne démarre pas (« Address already in use »)** : si le port socket du démon (`55009` par défaut) est déjà pris par un autre plugin, le cadre Démon de la page de configuration l'indique (configuration NOK, avec le processus en cause), au lieu d'un échec silencieux. Il suffit alors de choisir un autre « Port socket démon » dans la configuration du plugin.
 
 ## 1.2.0 — 2026-09-25
 
