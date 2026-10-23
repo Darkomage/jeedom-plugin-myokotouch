@@ -1,0 +1,27 @@
+<div class="cmd cmd-widget #history#" data-type="info" data-subtype="numeric" data-template="okoEnum" data-version="#version#" data-eqLogic_id="#eqLogic_id#" data-cmd_id="#id#" data-cmd_uid="#uid#" data-oko_map="#valueMap#">
+	<center>
+		<span class="cmdName #hide_name#">#name_display#</span> <strong class="state"></strong>
+	</center>
+	<script>
+		jeedom.cmd.addUpdateFunction('#id#', function(_options) {
+			var cmd = $('.cmd[data-cmd_uid="#uid#"]')
+			// Correspondance "valeur|libellé;…" : clés comparées en numérique (0, "0" et 0.0 équivalents)
+			var norm = function(v) {
+				var n = parseFloat(v)
+				return isNaN(n) ? String(v).trim() : String(n)
+			}
+			var label = null
+			var pairs = (cmd.attr('data-oko_map') || '').split(';')
+			for (var i = 0; i < pairs.length; i++) {
+				var sep = pairs[i].indexOf('|')
+				if (sep > 0 && norm(pairs[i].substring(0, sep)) === norm(_options.value)) {
+					label = pairs[i].substring(sep + 1)
+					break
+				}
+			}
+			cmd.find('.state').text((label !== null) ? label : _options.display_value)
+		});
+
+		jeedom.cmd.refreshValue([{cmd_id :'#id#', value: '#value#', display_value: '#state#', valueDate: '#valueDate#', collectDate: '#collectDate#', alertLevel: '#alertLevel#', unit: '#unite#'}])
+	</script>
+</div>
