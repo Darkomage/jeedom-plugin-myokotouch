@@ -130,8 +130,8 @@ Le mode définit quelles commandes sont créées sur un équipement.
 
 - Le **mode par défaut global** se configure dans la configuration du plugin
 - Chaque équipement peut avoir son propre mode, indépendamment du réglage global
-- Changer le mode d'un équipement puis sauvegarder recréé les commandes selon le nouveau mode
-- Sur chaque équipement un bouton "Régénérer les commandes" permet d'effacer et recréer les commandes, soit en utilisant un nom desciptif, soit en utilisant le nom brut de la variable
+- Passer un équipement en mode expert puis sauvegarder régénère ses commandes selon le nouveau mode
+- Sur chaque équipement, un bouton **Régénérer les commandes** réinitialise les commandes (noms, widgets, types génériques), soit avec un nom descriptif, soit avec le nom brut de la variable. La régénération se fait **sur place** : les commandes conservent leur ID, leur historique et leurs utilisations dans les scénarios, designs et vues. Seules sont supprimées les commandes qui ne font plus partie du mode choisi.
 
 ---
 
@@ -159,6 +159,10 @@ Certains firmwares Okofen anciens (**V3.00 confirmé**, potentiellement d'autres
 - les **caractères accentués** (libellés d'état, noms de circuits…).
 
 Le plugin corrige automatiquement les unités connues (`?C` → `°C`) lors de la **synchronisation**. En revanche, les caractères accentués mutilés ne sont **pas récupérables** : l'information est perdue au niveau de la chaudière. Mettre à jour le firmware de la chaudière (lorsque c'est possible) résout le problème à la racine.
+
+### Caractères remplacés par « � » (versions 1.1.1 à 1.2.1)
+
+Certaines chaudières renvoient leurs textes dans un ancien encodage (Latin-1). Jusqu'à la version 1.2.1, le démon les interprétait mal : `°C` s'affichait `�C`, `Arrêt` s'affichait `Arr�t`, etc. Depuis la correction, il suffit de **mettre à jour le plugin, relancer le démon puis cliquer sur Synchroniser** : les unités, listes de choix, libellés et noms abîmés sont corrigés **sur les commandes existantes**, sans les recréer (leurs ID et leurs utilisations sont conservés). Les noms ou libellés que vous aviez personnalisés et qui ne contiennent pas de `�` ne sont pas modifiés.
 
 > Si vous rencontrez un cas non couvert, générez un **fichier de diagnostic** (voir *Configuration globale*) et transmettez-le au support : il contient les octets bruts renvoyés par votre chaudière.
 
