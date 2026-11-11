@@ -6,6 +6,11 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 1.2.3 — 2026-11-11
+
+### Corrections
+- **Fiabilisation de la génération du fichier de diagnostic** : généré pendant que le démon interrogeait la chaudière, le fichier pouvait ne contenir que son message de refus (`Wait at least 2500ms during requests.`). Le bouton met maintenant le démon en pause le temps de la lecture, puis le relance. La génération prend une dizaine de secondes.
+
 ## 1.2.2 — 2026-10-30
 
 ### Corrections

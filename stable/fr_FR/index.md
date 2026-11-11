@@ -53,6 +53,8 @@ Vérifie l'accès à la chaudière avec les paramètres saisis et affiche la lis
 
 Génère et télécharge un fichier `.json` contenant le **retour brut** de la chaudière (avec les informations d'encodage) et l'inventaire des commandes Jeedom existantes. Ce fichier est destiné à être **transmis au support** en cas de problème d'affichage, d'encodage ou de valeurs incohérentes — il permet d'analyser ce que renvoie réellement la chaudière sans y accéder directement. **Le mot de passe n'y figure pas et l'adresse est masquée.**
 
+La génération prend une dizaine de secondes : le démon est mis en pause le temps de lire la chaudière (elle refuse deux lectures trop rapprochées), puis il reprend seul. Dans le fichier, `okofen_parsed_ok` vaut `true` quand les données de la chaudière ont bien été récupérées.
+
 ---
 
 ## Synchronisation des équipements
