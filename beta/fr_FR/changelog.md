@@ -6,6 +6,11 @@
 
 > Historique des versions du plugin MyOkoTouch.
 
+## 1.2.3-beta — 2026-11-11
+
+### Corrections
+- **Fiabilisation de la génération du fichier de diagnostic** : généré pendant que le démon interrogeait la chaudière, le fichier pouvait ne contenir que son message de refus (`Wait at least 2500ms during requests.`). Le bouton met maintenant le démon en pause le temps de la lecture, puis le relance. La génération prend une dizaine de secondes.
+
 ## 1.2.2-beta — 2026-10-30
 
 ### Corrections
@@ -52,6 +57,15 @@ Mise à jour des liens de documentation.
 ## 0.0.1-beta — 2026-04-13
 
 Première version beta publique.
+
+## 1.2.2 — 2026-10-30
+
+### Corrections
+- **Caractères remplacés par « � »** (`�C`, `Arr�t`, `Mode r�duit actif`…) sur les chaudières qui envoient leurs textes en Latin-1 : le démon décode désormais correctement ces réponses. Après mise à jour, relancer le démon puis lancer une synchronisation : les unités, listes de choix, libellés et noms abîmés sont corrigés sur les commandes existantes, sans les recréer.
+- **Fichier de diagnostic vide** sur ces mêmes chaudières : le fichier est maintenant toujours généré. Il contient en plus le retour brut en base64, des extraits des caractères spéciaux avec leurs octets, et la version de l'interface JSON de la chaudière lorsqu'elle est disponible.
+
+### Améliorations
+- **Régénérer les commandes** ne supprime plus les commandes pour les recréer : elles sont mises à jour sur place et gardent leur ID, leur historique et leurs utilisations (scénarios, designs, vues). Seules les commandes qui ne font plus partie du mode choisi sont supprimées. S'applique aussi au passage d'un équipement en mode expert.
 
 ## 1.2.1 — 2026-10-23
 
